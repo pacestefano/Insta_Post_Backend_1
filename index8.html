@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carica una foto e genera il testo del tuo Post con l'AI</title>
+    <style>
+        :root {
+            --primary-color: #333333; /* Grigio scuro per l'header */
+            --secondary-color: #1c1c1c; /* Grigio scuro per il bordo e sfondo dei contenitori */
+            --text-color: #ffffff; /* Testo bianco */
+            --button-color: #000000; /* Sfondo nero per i bottoni */
+            --button-hover: #333333; /* Grigio scuro per l'hover dei bottoni */
+            --button-selected: #81c784; /* Verde chiaro per i pulsanti selezionati */
+            --button-border: #ffffff; /* Bordo bianco per i bottoni */
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: #000000; /* Sfondo nero */
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .menu-bar {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: flex-end; /* Sposta il menu sulla destra */
+            align-items: center;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        .burger-menu-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .burger-menu {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px; /* Ridotto del 20% da 30px */
+            height: 19.2px; /* Ridotto del 20% da 24px */
+            cursor: pointer;
+        }
+
+        .burger-menu div {
+            width: 100%;
+            height: 3.2px; /* Ridotto del 20% da 4px */
+            background-color: #ffffff; /* Colore bianco per il burger menu */
+            transition: 0.4s;
+        }
+
+        .burger-menu-label {
+            font-size: 12px;
+            margin-top: 4px;
+            color: var(--text-color);
+        }
+
+        .burger-menu-content {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .burger-menu-content a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: background 0.3s;
+        }
+
+        .burger-menu-content a:hover {
+            background: var(--button-hover);
+        }
+
+        .container {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-bottom: 70px;
+            color: var(--text-color);
+            font-style: italic; /* Testo in italic */
+        }
+
+        .step-container {
+            position: relative;
+            margin-bottom: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            background-color: var(--primary-color); 
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+
+       .step-label {
+    position: absolute;
+    top: -20px;
+    left: 10px;
+    background-color: #007bff; /* Colore blu */
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 12px;
+    color: var(--text-color);
+}
+
+        input[type="file"] {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        #imageUploadContainer {
+            display: flex;
+            align-items: center;
+        }
+
+        #imageUpload {
+            flex-grow: 1;
+        }
+
+        #imagePreview {
+            width: 50px;
+            height: 50px;
+            margin-left: 10px;
+            object-fit: cover;
+            border-radius: 5px;
+            display: none;
+        }
+
+        #imageText {
+            margin-right: 10px;
+            font-size: 11px;
+            color: #555;
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        #styleButtons {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .style-button {
+            background-color: var(--button-color);
+            color: white;
+            border: 1px solid var(--button-border);
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: background-color 0.3s;
+        }
+
+        .style-button.selected {
+            background-color: var(--button-selected);
+        }
+
+        .style-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        #generateBtn {
+            background-color: var(--button-color);
+            color: white;
+            border: 1px solid var(--button-border);
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        #generateBtn:hover {
+            background-color: var(--button-hover);
+        }
+
+        .caption-container {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .caption-box {
+            position: relative;
+            background-color: var(--secondary-color);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .caption-box input[type="checkbox"] {
+            margin-left: 10px;
+        }
+
+        .copy-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-color);
+            margin-left: 10px;
+        }
+
+        .copy-icon i {
+            font-size: 16px;
+        }
+
+        .copy-icon:hover {
+            color: var(--button-hover);
+        }
+
+        .blinking {
+            animation: blinkingText 1.2s infinite;
+        }
+
+        @keyframes blinkingText {
+            0% { color: #ffffff; }
+            49% { color: #ffffff; }
+            60% { color: transparent; }
+            99% { color: transparent; }
+            100% { color: #ffffff; }
+        }
+
+        #previewBtn {
+            display: none;
+            background-color: var(--button-color);
+            color: white;
+            border: 1px solid var(--button-border);
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.01s;
+            margin-top: 20px;
+        }
+
+        #previewBtn:hover {
+            background-color: var(--button-hover);
+        }
+
+        .instagram-preview {
+            margin-top: 20px;
+            width: 100%;
+            border: 1px solid var(--button-hover);
+            border-radius: 15px;
+            overflow: hidden;
+            background-color: var(--secondary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+            
+.title-box {
+    font-size: 24px;
+    color: white;
+    font-style: italic;
+    margin-right: auto; /* Posiziona il testo a sinistra */
+}
+
+            
+            
+            
+            
+        .instagram-header {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            background-color: var(--button-hover);
+            border-bottom: 1px solid var(--primary-color);
+        }
+
+        .instagram-header img {
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .instagram-username {
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .instagram-image {
+            width: 90%; /* Riduce la larghezza al 90% dello schermo */
+            height: auto; /* Mantiene le proporzioni originali */
+            max-height: 80vh; /* Imposta un'altezza massima in base all'altezza dello schermo */
+            object-fit: contain; /* Assicura che l'immagine venga contenuta senza distorsioni */
+            border-bottom: 1px solid var(--primary-color);
+            margin: 0 auto; /* Centra l'immagine */
+            display: block;
+        }
+
+        .instagram-caption {
+            padding: 10px 15px;
+            font-size: 14px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            box-sizing: border-box;
+            max-height: 300px;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+
+        #step4Container {
+            display: none;
+        }
+
+        #condividiWhatsAppBtn {
+            display: none;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        #condividiWhatsAppBtn:hover {
+            background-color: #128C7E;
+        }
+
+        #screenshotBtn {
+            display: none;
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        #screenshotBtn:hover {
+            background-color: #005AEC;
+        }
+
+        .account-icon {
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            margin-right: auto;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: var(--secondary-color);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid var(--button-hover);
+            width: 300px;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #authForm input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--button-hover);
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #authForm button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: var(--button-color);
+            color: white;
+        }
+
+        .account-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: auto;
+        }
+
+        .account-label {
+            font-size: 12px;
+            margin-top: 4px;
+            color: var(--text-color);
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="menu-bar">
+        <div class="account-container">
+            <div class="account-icon" id="accountIcon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="account-label" id="accountLabel">Registrati/Login</div>
+        </div>
+        <div class="title-box">
+            Instagram Post AI Maker
+        </div>
+        <div class="burger-menu-container">
+            <div class="burger-menu" onclick="toggleMenu()">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <span class="burger-menu-label">Menu</span>
+        </div>
+    </div>
+
+    <!-- Aggiungi questo div per il modal di login/registrazione -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="authTitle">Accedi</h2>
+            <form id="authForm">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit" id="submitAuth">Accedi</button>
+            </form>
+            <p id="switchAuth">Non hai un account? <a href="#">Registrati</a></p>
+        </div>
+    </div>
+
+    <div class="burger-menu-content" id="burgerMenuContent">
+        <a href="FAQ.html">Domande Frequenti</a>
+        <a href="Sostienici.html">Sostienici con una donazione</a>
+    </div>
+
+    <div class="container">
+        <h1>Carica una foto e genera il testo del tuo Post con l'AI</h1>
+
+        <div class="step-container">
+            <div class="step-label">Step 1: seleziona l'immagine che vuoi postare</div>
+            <div id="imageUploadContainer">
+                <input type="file" id="imageUpload" accept="image/*">
+                <span id="imageText">l'immagine per il tuo Post</span>
+                <img id="imagePreview" alt="Anteprima Immagine">
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-label">Step 2: Scegli lo stile del testo</div>
+            <div id="styleButtons"></div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-label">Step 3: fai click per generare il testo</div>
+            <button id="generateBtn">Genera il testo per il tuo Post</button>
+        </div>
+
+        <div id="step4Container" class="step-container">
+            <div class="step-label">Step 4: Scegli la versione che preferisci e vedi l'anteprima</div>
+            <div id="captionContainer" class="caption-container"></div>
+            <button id="previewBtn">Vedi l'anteprima del tuo post</button>
+        </div>
+
+        <div id="instagramPreview" class="instagram-preview" style="display:none;">
+            <div class="instagram-header">
+                <img src="https://via.placeholder.com/32" alt="user">
+                <span class="instagram-username">username</span>
+            </div>
+            <img id="instagramImage" src="" alt="Preview Image" class="instagram-image">
+            <div id="instagramCaption" class="instagram-caption"></div>
+        </div>
+
+        <button id="condividiWhatsAppBtn">Condividi su WhatsApp</button>
+        <button id="screenshotBtn">Fai uno screenshot dell'anteprima</button>
+    </div>
+
+    <script src="app8.js"></script>
+    <script>
+        let caption1 = '';
+        let caption2 = '';
+
+        function toggleMenu() {
+            const menu = document.getElementById('burgerMenuContent');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'block';
+            }
+        }
+
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            // Simulazione della generazione del testo
+            caption1 = "in attesa dell'output...";
+            caption2 = "in attesa dell'output...";
+
+            const captionContainer = document.getElementById('captionContainer');
+            captionContainer.innerHTML = ""; // Pulisce il contenitore delle caption precedenti
+
+            // Creazione del box per la prima caption
+            const captionBox1 = document.createElement('div');
+            captionBox1.className = 'caption-box';
+
+            const captionText1 = document.createElement('span');
+            captionText1.textContent = caption1;
+            captionText1.className = 'caption-text blinking';
+            captionBox1.appendChild(captionText1);
+
+            const copyIcon1 = document.createElement('div');
+            copyIcon1.className = 'copy-icon';
+            copyIcon1.innerHTML = '<i class="fas fa-copy"></i>';
+            copyIcon1.addEventListener('click', () => {
+                console.log('Attempting to copy Caption 1:', caption1);
+                copyToClipboard(caption1);
+            });
+            captionBox1.appendChild(copyIcon1);
+
+            // Creazione del box per la seconda caption
+            const captionBox2 = document.createElement('div');
+            captionBox2.className = 'caption-box';
+
+            const captionText2 = document.createElement('span');
+            captionText2.textContent = caption2;
+            captionText2.className = 'caption-text blinking';
+            captionBox2.appendChild(captionText2);
+
+            const copyIcon2 = document.createElement('div');
+            copyIcon2.className = 'copy-icon';
+            copyIcon2.innerHTML = '<i class="fas fa-copy"></i>';
+            copyIcon2.addEventListener('click', () => {
+                console.log('Attempting to copy Caption 2:', caption2);
+                copyToClipboard(caption2);
+            });
+            captionBox2.appendChild(copyIcon2);
+
+            // Aggiungi i box delle caption al contenitore
+            captionContainer.appendChild(captionBox1);
+            captionContainer.appendChild(captionBox2);
+
+            // Mostra Step 4 e il pulsante di anteprima
+            document.getElementById('step4Container').style.display = 'block';
+            document.getElementById('previewBtn').style.display = 'inline-block';
+
+            // Simula la ricezione dell'output dell'API (sostituire con la logica reale)
+            setTimeout(() => {
+                caption1 = "Testo finale per la Caption 1";
+                caption2 = "Testo finale per la Caption 2";
+
+                // Aggiorna il testo e rimuovi l'effetto lampeggiante
+                captionText1.textContent = caption1;
+                captionText1.classList.remove('blinking');
+
+                captionText2.textContent = caption2;
+                captionText2.classList.remove('blinking');
+            }, 3000); // Simulazione di un'attesa di 3 secondi
+        });
+
+        function copyToClipboard(text) {
+            if (!text) {
+                console.error('No text to copy!');
+                alert('Errore: Nessun testo da copiare!');
+                return;
+            }
+
+            console.log('Text to be copied:', text);
+
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+
+            textArea.style.position = 'fixed';
+            textArea.style.top = '0';
+            textArea.style.left = '0';
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            textArea.style.padding = '0';
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            textArea.style.background = 'transparent';
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                const msg = successful ? 'Testo copiato negli appunti!' : 'Errore durante la copia del testo.';
+                console.log(msg);
+                alert(msg);
+            } catch (err) {
+                console.error('Errore durante la copia del testo:', err);
+                alert('Errore durante la copia del testo: ' + err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        // Aggiungi questa funzione per catturare lo screenshot
+        function catturaScrennshot() {
+            const instagramPreview = document.getElementById('instagramPreview');
+            
+            if (!instagramPreview || instagramPreview.style.display === 'none') {
+                alert('Genera prima l\'anteprima del post');
+                return;
+            }
+
+            html2canvas(instagramPreview).then(canvas => {
+                const screenshotDataUrl = canvas.toDataURL('image/png');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = screenshotDataUrl;
+                downloadLink.download = 'instagram_post_screenshot.png';
+                downloadLink.click();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Crea il pulsante per lo screenshot
+            const screenshotButton = document.createElement('button');
+            screenshotButton.id = 'screenshotBtn';
+            screenshotButton.textContent = 'Fai uno screenshot dell\'anteprima';
+            screenshotButton.style.display = 'none';
+            screenshotButton.addEventListener('click', catturaScrennshot);
+            
+            document.body.appendChild(screenshotButton);
+
+            // Modifica l'evento click del pulsante "Vedi l'anteprima del tuo post"
+            document.getElementById('previewBtn').addEventListener('click', () => {
+                // ... codice esistente ...
+
+                instagramPreview.style.display = 'block';
+                console.log('Anteprima visualizzata con successo.');
+
+                // Mostra i pulsanti di condivisione e screenshot
+                document.getElementById('condividiWhatsAppBtn').style.display = 'block';
+                document.getElementById('screenshotBtn').style.display = 'block';
+            });
+        });
+
+        // Funzione per aggiornare la label dell'account
+        function updateAccountLabel(username) {
+            const accountLabel = document.getElementById('accountLabel');
+            if (username) {
+                accountLabel.textContent = username.substring(0, 10);
+            } else {
+                accountLabel.textContent = 'Registrati/Login';
+            }
+        }
+
+        // Esempio di utilizzo:
+        // Quando l'utente effettua il login, chiama questa funzione
+        // updateAccountLabel('NomeUtente');
+
+        // Quando l'utente effettua il logout, chiama questa funzione
+        // updateAccountLabel();
+
+        let isLoggedIn = false;
+        let currentUsername = '';
+
+        // Funzione per aggiornare la label dell'account
+        function updateAccountLabel() {
+            const accountLabel = document.getElementById('accountLabel');
+            if (isLoggedIn && currentUsername) {
+                accountLabel.textContent = currentUsername.substring(0, 10);
+            } else {
+                accountLabel.textContent = 'Registrati/Login';
+            }
+        }
+
+        // Funzione per gestire il login
+        function handleLogin(username) {
+            isLoggedIn = true;
+            currentUsername = username;
+            updateAccountLabel();
+            // Qui puoi aggiungere altre azioni da eseguire dopo il login
+        }
+
+        // Funzione per gestire il logout
+        function handleLogout() {
+            isLoggedIn = false;
+            currentUsername = '';
+            updateAccountLabel();
+            // Qui puoi aggiungere altre azioni da eseguire dopo il logout
+        }
+
+        // Gestione del click sull'icona dell'account
+        document.getElementById('accountIcon').addEventListener('click', function() {
+            if (isLoggedIn) {
+                // Se l'utente è già loggato, mostra un menu di logout o altre opzioni
+                if (confirm('Vuoi effettuare il logout?')) {
+                    handleLogout();
+                }
+            } else {
+                // Se l'utente non è loggato, mostra il modal di login
+                document.getElementById('authModal').style.display = 'block';
+            }
+        });
+
+        // Gestione del form di autenticazione
+        document.getElementById('authForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Qui dovresti implementare la vera logica di autenticazione
+            // Per ora, simuliamo un login riuscito
+            handleLogin(username);
+            
+            // Chiudi il modal
+            document.getElementById('authModal').style.display = 'none';
+        });
+
+        // Chiusura del modal
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('authModal').style.display = 'none';
+        });
+
+        // Inizializza la label dell'account
+        updateAccountLabel();
+    </script>
+</body>
+</html>

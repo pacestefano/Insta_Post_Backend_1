@@ -1,0 +1,34 @@
+{
+  "buttons": [
+    {
+      "id": 1,
+      "text": "Divertente",
+      "prompt": "Genera una caption per un post su Instagram che sia adatta all'immagine che ti ho appena inviato, usando uno stile \"divertente\" che possa generare delle risate in chi legge il post"
+    },
+    {
+      "id": 2,
+      "text": "Sarcastico",
+      "prompt": "Genera una caption per un post su Instagram che sia adatta all'immagine che ti ho appena inviato, usando uno stile \"Sarcastico\" "
+    },
+    {
+      "id": 3,
+      "text": "Romantico",
+      "prompt": "Genera una caption per un post su Instagram che sia adatta all'immagine che ti ho appena inviato, usando uno stile \"Romantico\" con l'obiettivo di generare una reazione di commozione nel lettore"
+    },
+    {
+      "id": 4,
+      "text": "Aforisma",
+      "prompt": "Genera una caption per un post su Instagram che sia adatta all'immagine che ti ho appena inviato, usando un aforisma che generi una reazione di interesse nel lettore e inserendo alla fine del testo il nome dell'autore di quell'aforisma."
+    },
+    {
+      "id": 5,
+      "text": "Poesia",
+      "prompt": "Genera una caption per un post su Instagram che sia adatta all'immagine che ti ho appena inviato, usando una poesia di massimo 400 caratteri di lunghezza e inserendo alla fine della poesia il nome del poeta"
+    },
+    {
+      "id": 6,
+      "text": "Frasi celebri",
+      "prompt": "Genera una caption per un post su Instagram che sia adatta all'immagine che ti ho appena inviato, usando una frase tratta da uno dei grandi classici della letteratura"
+    }
+  ]
+}

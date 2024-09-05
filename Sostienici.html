@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sostienici - Instagram Post AI Maker</title>
+    <style>
+        /* Stili simili a index8.html per mantenere la coerenza */
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #1c1c1c;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 50px; /* Aggiunto per dare spazio al pulsante */
+            position: relative; /* Aggiunto per posizionare il pulsante Home */
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 40px; /* Aumentato il margine inferiore */
+        }
+
+        .donate-form {
+            margin-top: 30px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        /* Nuovo stile per il pulsante Home */
+        .home-button {
+            background-color: #4CAF50; /* Verde più visibile */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .home-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Stile aggiornato per la freccia lampeggiante (solo triangolo) */
+        .blinking-arrow {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #4CAF50;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Rimozione dello stile per lo stelo della freccia */
+        .blinking-arrow::before {
+            content: none;
+        }
+
+        /* Nuovo stile per il bullet lampeggiante */
+        .blinking-bullet {
+            animation: blink 2s infinite;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Nuovo pulsante Home -->
+        <a href="index8.html" class="home-button">Back to Home Page</a>
+
+        <h1>Sostieni Instagram Post AI Maker</h1>
+        
+        <div class="donate-form">
+            <!-- Freccia lampeggiante (solo triangolo) -->
+            <div class="blinking-arrow">&#9660;</div>
+            <form action="https://www.paypal.com/donate" method="post" target="_top">
+                <input type="hidden" name="business" value="DP7SXAAVY6GPU" />
+                <input type="hidden" name="no_recurring" value="0" />
+                <input type="hidden" name="currency_code" value="EUR" />
+                <input type="image" src="https://www.paypalobjects.com/en_US/IT/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                <img alt="" border="0" src="https://www.paypal.com/en_IT/i/scr/pixel.gif" width="1" height="1" />
+            </form>
+        </div>
+
+        <h2>Perché sostenerci?</h2>
+        <p>Instagram Post AI Maker è un servizio gratuito che offre un modo innovativo per creare contenuti per i tuoi post su Instagram. Il nostro obiettivo è rendere la creazione di contenuti più facile, veloce e creativa per tutti gli utenti.</p>
+
+        <h2>Come utilizziamo le donazioni?</h2>
+        <ul>
+            <li class="blinking-bullet">Supporto alla copertura dei costi verso Chat-GPT</li>
+            <li>Mantenimento e aggiornamento dei server</li>
+            <li>Miglioramento delle funzionalità esistenti</li>
+            <li>Sviluppo di nuove caratteristiche</li>
+            <li>Supporto tecnico agli utenti</li>
+        </ul>
+
+        <h2>Benefici per i sostenitori</h2>
+        <p>Al momento, tutti i nostri servizi sono completamente gratuiti e accessibili a tutti. Tuttavia, stiamo considerando l'introduzione di funzionalità premium per i nostri sostenitori in futuro. Restate sintonizzati per ulteriori aggiornamenti!</p>
+
+        <h2>Altri modi per supportarci</h2>
+        <p>Se non puoi fare una donazione in questo momento, puoi comunque supportarci in altri modi:</p>
+        <ul>
+            <li>Condividi Instagram Post AI Maker con i tuoi amici e follower</li>
+            <li>Lascia una recensione positiva se ti piace il nostro servizio</li>
+            <li>Inviaci feedback e suggerimenti per migliorare</li>
+        </ul>
+
+        <p>Grazie per il tuo supporto! Ogni contributo, grande o piccolo, ci aiuta a continuare a migliorare e mantenere Instagram Post AI Maker.</p>
+    </div>
+</body>
+</html>
