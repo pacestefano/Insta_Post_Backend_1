@@ -1,5 +1,4 @@
 // Configurazione API di OpenAI
-const OPENAI_API_KEY = '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'; // Sostituisci con la tua chiave API
 const OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 
 let selectedCaption = ''; // Variabile per memorizzare la caption selezionata
@@ -88,8 +87,13 @@ async function encodeImage(imageFile) {
 // Funzione per generare una caption utilizzando OpenAI API
 async function generateCaptionWithAI(imageBase64, style) {
     const prompt = stylePrompts[style];
-
     console.log('Prompt inviato all\'API:', prompt);
+
+    // Ottieni la chiave API in modo sicuro
+    const apiKey = await getOpenAIKey();
+    if (!apiKey) {
+        throw new Error('Impossibile ottenere la chiave API');
+    }
 
     const requestBody = {
         model: "gpt-4o-mini",
@@ -116,7 +120,7 @@ async function generateCaptionWithAI(imageBase64, style) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${OPENAI_API_KEY}`
+            'Authorization': `Bearer ${apiKey}` // Usa la chiave API ottenuta in modo sicuro
         },
         body: JSON.stringify(requestBody)
     });
@@ -481,5 +485,104 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (currentUser) {
         updateAccountIcon(true);
+    }
+});
+
+// Aggiorna questa costante con l'URL corretto del tuo backend
+const BACKEND_URL = 'https://ai-text-generator-project-api.onrender.com';
+
+// Funzione per ottenere la chiave API dal servizio backend
+async function getOpenAIKey() {
+    console.log('Inizio richiesta della chiave API dal backend');
+    try {
+        const response = await fetch(BACKEND_URL);
+        console.log('Risposta ricevuta dal backend:', response);
+        
+        if (!response.ok) {
+            throw new Error(`Errore HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Dati ricevuti dal backend:', data);
+        
+        return data.OPEN_API_KEY;
+    } catch (error) {
+        console.error('Errore durante la richiesta della chiave API:', error);
+        throw error;
+    }
+}
+
+// Funzione di test per la chiamata al backend
+async function testBackendCall() {
+    console.log('Inizio test della chiamata al backend');
+    console.log('URL del backend:', BACKEND_URL);
+    try {
+        console.log('Preparazione della richiesta fetch...');
+        const options = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        };
+        console.log('Opzioni della richiesta:', options);
+
+        console.log('Invio richiesta fetch...');
+        const response = await fetch(BACKEND_URL, options);
+        console.log('Risposta ricevuta dal backend');
+        console.log('Status:', response.status);
+        console.log('Status Text:', response.statusText);
+        console.log('Headers:', JSON.stringify(Object.fromEntries(response.headers)));
+        console.log('Response URL:', response.url);
+        console.log('Response Type:', response.type);
+        console.log('Response OK:', response.ok);
+
+        if (!response.ok) {
+            console.error('Risposta non ok. Dettagli:', {
+                status: response.status,
+                statusText: response.statusText,
+                url: response.url
+            });
+
+            // Tenta di leggere il corpo della risposta anche in caso di errore
+            try {
+                const errorBody = await response.text();
+                console.error('Corpo della risposta di errore:', errorBody);
+            } catch (bodyError) {
+                console.error('Impossibile leggere il corpo della risposta di errore:', bodyError);
+            }
+
+            throw new Error(`Errore HTTP: ${response.status} - ${response.statusText}`);
+        }
+        
+        console.log('Parsing del corpo della risposta...');
+        const data = await response.json();
+        console.log('Dati ricevuti dal backend:', data);
+        
+        return data;
+    } catch (error) {
+        console.error('Errore durante il test della chiamata al backend:', error);
+        if (error instanceof TypeError) {
+            console.error('Possibile errore di rete o CORS. Dettagli:', error.message);
+        }
+        if (error.name === 'AbortError') {
+            console.error('La richiesta è stata interrotta. Possibile timeout.');
+        }
+        return null;
+    }
+}
+
+// Chiamata della funzione di test all'avvio dell'applicazione
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Avvio del test della chiamata al backend');
+    try {
+        const result = await testBackendCall();
+        if (result) {
+            console.log('Test completato con successo. Risultato:', result);
+        } else {
+            console.log('Test fallito. Controlla i log per i dettagli dell\'errore.');
+        }
+    } catch (error) {
+        console.error('Errore durante l\'esecuzione del test:', error);
     }
 });
