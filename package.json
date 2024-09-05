@@ -2,7 +2,7 @@
   "name": "ai-text-generator-project-api",
   "version": "1.0.0",
   "description": "Backend for Instagram Post AI Maker",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node index.js"
   },
